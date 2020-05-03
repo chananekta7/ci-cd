@@ -1,0 +1,37 @@
+{
+    "variables" : {
+        "region" : "ap-southeast-2",
+        "source_ami" : "ami-0aaceffb9f9a60857"
+    },
+    "builders" : [
+        {
+            "type" : "amazon-ebs",
+            "profile" : "default",
+            "region" : "{{user `region`}}",
+            "instance_type" : "t2.micro",
+            "source_ami" : "{{user `source_ami`}}",
+            "ssh_username" : "ec2-user",
+            "ami_name" : "bastion-2020.03.0",
+            "ami_description" : "Amazon Linux Image with Telegraf",
+            "run_tags" : {
+                "Name" : "packer-builder-docker"
+            },
+            "tags" : {
+                "Tool" : "Packer",
+                "Author" : "raladkat"
+            }
+        }
+    ],
+    "provisioners" : [
+        {
+            "type" : "file",
+            "source" : "./telegraf.conf",
+            "destination" : "/tmp/telegraf.conf"
+        },
+        {
+            "type" : "shell",
+            "script" : "./setup.sh",
+            "execute_command" : "sudo -E -S sh '{{ .Path }}'"
+        }
+    ]
+}
